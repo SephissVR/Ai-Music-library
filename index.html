@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cute AI Music Showcase</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.16);
+      --text: #f5f7ff;
+      --muted: #b9c1e0;
+      --glow: rgba(139, 92, 246, 0.35);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139, 92, 246, 0.25), transparent 32%),
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.22), transparent 28%),
+        linear-gradient(180deg, #070b16 0%, #0b1020 40%, #090d18 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0.03), transparent 30%, rgba(255,255,255,0.02) 65%, transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      padding: 88px 0 48px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 18px;
+      text-shadow: 0 0 35px var(--glow);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 45%, #67e8f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-text {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      color: var(--text);
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px);
+      transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+      box-shadow: var(--shadow);
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.13);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(34, 211, 238, 0.9));
+      border: none;
+    }
+
+    section {
+      padding: 30px 0 26px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(1.5rem, 4vw, 2.3rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.6;
+    }
+
+    .song-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .song-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .song-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,0.28);
+      box-shadow: 0 24px 65px rgba(0,0,0,0.42);
+    }
+
+    .cover {
+      height: 260px;
+      position: relative;
+      overflow: hidden;
+      background-color: #111827;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1));
+      pointer-events: none;
+    }
+
+    .cover.two-am { background-image: url("2AMIntheHallway.png"); }
+    .cover.enginewave { background-image: url("NeonEngineWave.png"); }
+    .cover.neon-lights { background-image: url("NeonLightsDrip.png"); }
+    .cover.golden-hour { background-image: url("GoldenHourlingers.png"); }
+    .cover.spiral-teacups { background-image: url("SpiralTeacups.png"); }
+    .cover.shifting-circles { background-image: url("ShiftingCircles.png"); }
+    .cover.midnight-swing { background-image: url("MidnightSwing.png"); }
+
+    .cover.wispers {
+      background-image: url("WispersInTheAir.png");
+    }
+
+    .cover.LostSignal {
+      background-image: url("SignalLost.png");
+    }
+
+    .cover-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      padding: 18px;
+      z-index: 1;
+    }
+
+    .genre-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .play-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.22);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      color: white;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .play-icon:hover {
+      transform: scale(1.06);
+      background: rgba(255,255,255,0.22);
+      box-shadow: 0 0 20px rgba(103, 232, 249, 0.25);
+    }
+
+    .play-icon.playing {
+      background: rgba(34, 211, 238, 0.22);
+      box-shadow: 0 0 22px rgba(34, 211, 238, 0.28);
+    }
+
+    .song-content {
+      padding: 18px 18px 20px;
+    }
+
+    .song-title {
+      font-size: 1.14rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .song-desc {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+      min-height: 74px;
+    }
+
+    .song-status {
+      color: #dbeafe;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .audio-file {
+      display: none;
+    }
+
+    .link-card .cover {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .song-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 8px;
+      text-decoration: none;
+      color: #fff;
+      padding: 13px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(59,130,246,0.95));
+      font-weight: 700;
+      transition: transform 0.22s ease, filter 0.22s ease;
+    }
+
+    .song-link:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+    }
+
+    .about-box {
+      padding: 24px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    footer {
+      padding: 42px 0 70px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        padding-top: 68px;
+      }
+
+      .cover {
+        height: 220px;
+      }
+
+      .song-desc {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Suno &amp; Udio Music Collection</div>
+      <h1><span class="hero-gradient">My Cute AI Song Showcase</span></h1>
+      <p class="hero-text">
+        A cute little home for my AI music collection, featuring my Suno MP3 tracks and my Udio song links in one clean and pretty place.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#mp3-tracks">Listen to MP3 Tracks</a>
+        <a class="btn" href="#link-tracks">Open Song Links</a>
+      </div>
+    </header>
+
+    <section id="mp3-tracks">
+      <div class="section-heading">
+        <div>
+          <h2>Suno MP3 Songs</h2>
+        </div>
+        <p>These are my uploaded Suno tracks with the album art matched to each song.</p>
+      </div>
+
+      <div class="song-grid">
+        <article class="song-card">
+          <div class="cover two-am">
+            <div class="cover-inner">
+              <span class="genre-tag">Dream Pop</span>
+              <button class="play-icon" data-audio="audio-1" aria-label="Play 2 A.M. in the Hallway">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">2 A.M. in the Hallway</h3>
+            <p class="song-desc">A soft, lonely late-night track with a dreamy atmosphere and quiet emotional pull.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-1" class="audio-file">
+              <source src="2AMintheHallway.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover enginewave">
+            <div class="cover-inner">
+              <span class="genre-tag">Synthwave</span>
+              <button class="play-icon" data-audio="audio-2" aria-label="Play Midnight Enginewave">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Midnight Enginewave</h3>
+            <p class="song-desc">Neon-soaked motion and after-dark energy with a sleek futuristic pulse.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-2" class="audio-file">
+              <source src="MidnightEnginewave.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover neon-lights">
+            <div class="cover-inner">
+              <span class="genre-tag">Electro Pop</span>
+              <button class="play-icon" data-audio="audio-3" aria-label="Play Neon Lights Drip">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Neon Lights Drip</h3>
+            <p class="song-desc">Glossy city-night vibes with glowing melodies and a stylish electronic mood.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-3" class="audio-file">
+              <source src="NeonLightsDrip.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover golden-hour">
+            <div class="cover-inner">
+              <span class="genre-tag">Warm Indie</span>
+              <button class="play-icon" data-audio="audio-4" aria-label="Play Golden Hour Lingers">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Golden Hour Lingers</h3>
+            <p class="song-desc">A gentle and nostalgic track with soft warmth and sunset-like color in the sound.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-4" class="audio-file">
+              <source src="GoldenHourLingers.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover spiral-teacups">
+            <div class="cover-inner">
+              <span class="genre-tag">Whimsical</span>
+              <button class="play-icon" data-audio="audio-5" aria-label="Play Spiral Teacups">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Spiral Teacups</h3>
+            <p class="song-desc">Playful, surreal, and floaty with an imaginative energy that feels bright and strange.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-5" class="audio-file">
+              <source src="SpiralTeacups.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover shifting-circles">
+            <div class="cover-inner">
+              <span class="genre-tag">Ambient Pulse</span>
+              <button class="play-icon" data-audio="audio-6" aria-label="Play Shifting Circles">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Shifting Circles</h3>
+            <p class="song-desc">Smooth repeating motion, airy textures, and a hypnotic atmosphere that keeps unfolding.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-6" class="audio-file">
+              <source src="ShiftingCircles.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+
+        <article class="song-card">
+          <div class="cover midnight-swing">
+            <div class="cover-inner">
+              <span class="genre-tag">Slow Swing</span>
+              <button class="play-icon" data-audio="audio-7" aria-label="Play Midnight Slow Swing">▶</button>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Midnight Slow Swing</h3>
+            <p class="song-desc">A moody, slow-burning night track with smooth rhythm and intimate late-hour energy.</p>
+            <div class="song-status">Click the cover button to play or pause.</div>
+            <audio id="audio-7" class="audio-file">
+              <source src="MidnightSlowSwing.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="link-tracks">
+      <div class="section-heading">
+        <div>
+          <h2>Udio Song Links</h2>
+        </div>
+        <p>These two songs are from Udio, so visitors can click the cards and open them on the original platform.</p>
+      </div>
+
+      <div class="song-grid">
+        <article class="song-card link-card">
+          <div class="cover wispers">
+            <div class="cover-inner">
+              <span class="genre-tag">Udio Song</span>
+              <div class="play-icon">↗</div>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Wispers in the air</h3>
+            <p class="song-desc">A linked Udio song from my collection. Click below to open it and listen on Udio.</p>
+            <a class="song-link" href="https://www.udio.com/songs/acpFeWwZCqrpaw6d5Bu6df?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" target="_blank" rel="noopener noreferrer">Open Song</a>
+          </div>
+        </article>
+
+        <article class="song-card link-card">
+          <div class="cover LostSignal">
+            <div class="cover-inner">
+              <span class="genre-tag">Udio Song</span>
+              <div class="play-icon">↗</div>
+            </div>
+          </div>
+          <div class="song-content">
+            <h3 class="song-title">Signal Lost</h3>
+            <p class="song-desc">A gritty punk-inspired track with raw energy and underground vibes. Click below to listen on Udio.</p>
+            <a class="song-link" href="https://www.udio.com/songs/3pRqwLAD6aYWRUJ8kgHyrX?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" target="_blank" rel="noopener noreferrer">Open Song</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <h2>About This Collection</h2>
+        </div>
+      </div>
+      <div class="about-box">
+        This website is made to show off all 10 of my AI songs in one cute, organized place. The MP3 files are from Suno and the two external songs are from Udio, which makes it easy to keep everything together while still looking clean, stylish, and fun to browse. Programed and Images Made By ChatGPT.
+      </div>
+    </section>
+
+    <footer>
+      Made to showcase my Suno and Udio songs in a cute and polished way.
+    </footer>
+  </div>
+
+  <script>
+    const playButtons = document.querySelectorAll('.play-icon[data-audio]');
+    const allAudios = document.querySelectorAll('.audio-file');
+
+    function resetButtons() {
+      playButtons.forEach((button) => {
+        button.textContent = '▶';
+        button.classList.remove('playing');
+      });
+    }
+
+    playButtons.forEach((button) => {
+      const audio = document.getElementById(button.dataset.audio);
+
+      button.addEventListener('click', async () => {
+        const isPlaying = !audio.paused;
+
+        allAudios.forEach((track) => {
+          if (track !== audio) {
+            track.pause();
+            track.currentTime = 0;
+          }
+        });
+
+        resetButtons();
+
+        if (isPlaying) {
+          audio.pause();
+        } else {
+          try {
+            await audio.play();
+            button.textContent = '⏸';
+            button.classList.add('playing');
+          } catch (error) {
+            console.error('Audio failed to play:', error);
+          }
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        button.textContent = '▶';
+        button.classList.remove('playing');
+      });
+
+      audio.addEventListener('pause', () => {
+        if (!audio.ended) {
+          button.textContent = '▶';
+          button.classList.remove('playing');
+        }
+      });
+
+      audio.addEventListener('play', () => {
+        button.textContent = '⏸';
+        button.classList.add('playing');
+      });
+    });
+  </script>
+</body>
+</html>
